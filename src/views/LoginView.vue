@@ -19,7 +19,7 @@
 
                 <el-form-item label="验证码" prop="captcha">
                     <el-input v-model="formLogin.captcha" maxlength="5" style="width: 100px"/>
-                    <el-image></el-image>
+                    <el-image :src="captchaImg" class="captchaImg" @click="getCaptcha"></el-image>
                 </el-form-item>
 
                 <el-form-item>
@@ -35,9 +35,11 @@
 
 <script setup>
     import { reactive, ref } from 'vue'
+    import axios from '@/plugins/axios'
 
     const labelPosition = ref('top')
     const loginFormRef = ref()
+    let captchaImg = ref()
 
     const formLogin = reactive({
         name: '',
@@ -62,6 +64,9 @@
         if (!activeForm) return
         await activeForm.validate((valid, fields) => {
             if (valid) {
+            axios.post('/login').then(res => {
+                console.log('/login')
+            })
             console.log('submit!')
             } else {
             console.log('error submit!', fields)
@@ -73,4 +78,21 @@
         if (!resetForm) return
         resetForm.resetFields()
     }
+
+    function getCaptcha() {
+        axios.get('/captcha').then(res => {
+            console.log('/captcha')
+            captchaImg.value = res.data.data.captchaImg
+            console.log(captchaImg)
+        })
+    }
+
+    getCaptcha()
 </script>
+
+<style scoped>
+    .captchaImg {
+        margin-left: 8px;
+        border-radius: 4px;
+	}
+</style>
