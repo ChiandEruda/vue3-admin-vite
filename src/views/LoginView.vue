@@ -28,13 +28,12 @@
                 </el-form-item>
             </el-form>           
         </el-col>
-        <el-col></el-col>
-        <el-col></el-col>
     </el-row>
 </template>
 
 <script setup>
     import { reactive, ref } from 'vue'
+    import { ElMessage } from 'element-plus';
     import axios from '@/plugins/axios'
 
     const labelPosition = ref('top')
@@ -42,9 +41,9 @@
     let captchaImg = ref()
 
     const formLogin = reactive({
-        name: '',
-        password: '',
-        captcha: '',
+        name: 'admin',
+        password: '123456',
+        captcha: '123456',
     })
 
     const rules = reactive({
@@ -67,6 +66,7 @@
             axios.post('/login').then(res => {
                 console.log('/login')
             })
+            ElMessage.info("请扫描左边的二维码，回复【VueAdmin】获取登录密码");
             console.log('submit!')
             } else {
             console.log('error submit!', fields)
