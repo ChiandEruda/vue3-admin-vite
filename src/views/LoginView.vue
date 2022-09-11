@@ -1,4 +1,16 @@
 <template>
+    <header>
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+
+    <div class="wrapper">
+      <!-- <HelloWorld msg="You did it!" /> -->
+
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/login">Login</RouterLink>
+      </nav>
+    </div>
+  </header>
     <el-row>
         <el-col>
             <el-form
@@ -25,6 +37,7 @@
                 <el-form-item>
                     <el-button type="primary" @click="submit(loginFormRef)">提交</el-button>
                     <el-button @click="reset(loginFormRef)">重置</el-button>
+                    <el-button @click="getPass">获取密码</el-button>
                 </el-form-item>
             </el-form>           
         </el-col>
@@ -33,9 +46,14 @@
 
 <script setup>
     import { reactive, ref } from 'vue'
-    import { ElMessage } from 'element-plus';
+    import { ElMessage } from 'element-plus'
+    import qs from 'qs'
+    import { useRouter } from "vue-router";
+    import { useStore } from 'vuex'
     import axios from '@/plugins/axios'
 
+    const store = useStore()
+    const router = useRouter();
     const labelPosition = ref('top')
     const loginFormRef = ref()
     let captchaImg = ref()
@@ -63,13 +81,23 @@
         if (!activeForm) return
         await activeForm.validate((valid, fields) => {
             if (valid) {
-            axios.post('/login').then(res => {
-                console.log('/login')
+            axios.post('/login?'+qs.stringify(formLogin)).then(res => {
+                ElMessage.success("登录成功")
+                const jwt = res.headers['authorization']
+                // 将jwt存储到应用store中
+                store.commit("SET_TOKEN", jwt)
+                router.push({
+                    path: "/"
+                });
+            }).catch(err => {
+                ElMessage.error("登录失败")
+                getCaptcha()
+                console.log('error submit!!');
             })
-            ElMessage.info("请扫描左边的二维码，回复【VueAdmin】获取登录密码");
-            console.log('submit!')
             } else {
-            console.log('error submit!', fields)
+                ElMessage.error("验证失败")
+                getCaptcha();
+                console.log('error submit!', fields)
             }
         })        
     }
@@ -83,8 +111,11 @@
         axios.get('/captcha').then(res => {
             console.log('/captcha')
             captchaImg.value = res.data.data.captchaImg
-            console.log(captchaImg)
         })
+    }
+
+    function getPass() {
+        ElMessage("请联系管理员获取密码")
     }
 
     getCaptcha()
@@ -95,4 +126,66 @@
         margin-left: 8px;
         border-radius: 4px;
 	}
+
+    header {
+  line-height: 1.5;
+  max-height: 100vh;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+nav {
+  /* width: 100%; */
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+nav a.router-link-exact-active {
+  color: var(--color-text);
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
+
+nav a:first-of-type {
+  border: 0;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  nav {
+    text-align: left;
+    margin-left: -1rem;
+    font-size: 1rem;
+
+    padding: 1rem 0;
+    margin-top: 1rem;
+  }
+}    
 </style>

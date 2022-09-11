@@ -7,7 +7,7 @@ import 'element-plus/dist/index.css';
 import './mock'
 import axios from './plugins/axios.js'
 
-import './assets/main.css'
+import './assets/base.css'
 
 const app = createApp(App)
 
