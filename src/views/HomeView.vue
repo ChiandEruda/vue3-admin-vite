@@ -10,16 +10,18 @@
  
 			 <div class="header-avatar">
  
-				<el-avatar size="medium" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+				<el-avatar size="medium" :src="userInfo.avatar"></el-avatar>
  
 				<el-dropdown trigger="click">
 				   <span class="el-dropdown-link">
-				   Admin<el-icon class="el-icon--right"><arrow-down /></el-icon>
+				   {{ userInfo.username }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
 				   </span>
 				   <template #dropdown>
 					  <el-dropdown-menu>
-						 <el-dropdown-item :icon="User">用户中心</el-dropdown-item>
-						 <el-dropdown-item :icon="SwitchButton">退出</el-dropdown-item>
+						 <el-dropdown-item :icon="User">
+							<router-link to="/userCenter">用户中心</router-link>
+						</el-dropdown-item>
+						 <el-dropdown-item :icon="SwitchButton" @click.native="logout">退出</el-dropdown-item>
 					  </el-dropdown-menu>
 				   </template>
 				</el-dropdown>
@@ -33,19 +35,50 @@
 		  </el-main>
 	   </el-container>
 	</el-container>
-  </template>
+</template>
  
-  <script setup>
+<script setup>
  import {  
 	ArrowDown,
 	User, 
-	SwitchButton, 
-	Location
+	SwitchButton 
   } from '@element-plus/icons-vue'
   import SideMenu from '@/views/inc/SideMenu.vue'
-  </script>
+  import { ref } from 'vue'
+  import store from '@/store'
+  import router from '@/router'
+  import axios from '@/plugins/axios.js'
+
+  let userInfo = ref({
+	id: '',
+	username: '',
+	avatar: ''
+  })
+
+  function getUserInfo() {
+	axios.get('/sys/user').then(res => {
+		userInfo.value = res.data.data
+		console.log(res.data.data)
+	})
+  }
+
+  function logout() {
+	axios.post('/logout').then(res => {
+		localStorage.clear()
+		sessionStorage.clear()
+		store.commit('resetState')
+
+		router.push({
+			path: '/login'
+		})
+	})
+  }
+
+  getUserInfo()
+
+</script>
  
- <style scoped>
+<style scoped>
 	 .header-avatar {
 		 float: right;
 		 width: 210px;
@@ -91,4 +124,4 @@
 	.el-container:nth-child(7) .el-aside {
 	  line-height: 320px;
 	}
-  </style>
+</style>
