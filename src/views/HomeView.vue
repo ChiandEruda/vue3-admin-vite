@@ -18,10 +18,14 @@
 				   </span>
 				   <template #dropdown>
 					  <el-dropdown-menu>
-						 <el-dropdown-item :icon="User">
-							<router-link to="/userCenter">用户中心</router-link>
+						 <el-dropdown-item @click="router.push({path: '/userCenter'})">
+							<el-icon><User /></el-icon>
+							用户中心
 						</el-dropdown-item>
-						 <el-dropdown-item :icon="SwitchButton" @click.native="logout">退出</el-dropdown-item>
+						 <el-dropdown-item @click="logout">
+							<el-icon><SwitchButton /></el-icon>
+							退出
+						</el-dropdown-item>
 					  </el-dropdown-menu>
 				   </template>
 				</el-dropdown>
@@ -38,11 +42,6 @@
 </template>
  
 <script setup>
- import {  
-	ArrowDown,
-	User, 
-	SwitchButton 
-  } from '@element-plus/icons-vue'
   import SideMenu from '@/views/inc/SideMenu.vue'
   import { ref } from 'vue'
   import store from '@/store'

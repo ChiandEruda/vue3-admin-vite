@@ -3,64 +3,38 @@
     active-text-color="#ffd04b"
     background-color="#545c64"
     class="el-menu-vertical-demo"
-    default-active="2"
+    default-active="0"
     text-color="#fff"
     >
         <router-link to="/index">
             <el-menu-item index="0">
             <template #title>
                 <el-icon><HomeFilled /></el-icon>
-            <span>首页</span>
+                <span>首页</span>
             </template>
         </el-menu-item>
         </router-link>
 
 
-        <el-sub-menu index="1">
+        <el-sub-menu v-for="menu in menuList" :index="menu.name" :key="menu.name">
             <template #title>
-                <el-icon><Operation /></el-icon>
-                <span>系统管理</span>
+                <component
+                :is="menu.icon"
+                style="width: 1.2em; height: 1.2em; margin-right: 8px;"
+                >
+                </component>
+                <span>{{ menu.title }}</span>
             </template>
 
-            <router-link to="/sys/user">
-                <el-menu-item index="1-1">
-                <template #title>
-                    <el-icon><UserFilled /></el-icon>
-                    <span>用户管理</span>
-                </template>
-                </el-menu-item>
-            </router-link>
-
-            <router-link to="/sys/role">
-                <el-menu-item index="1-2">
-                <template #title>
-                    <el-icon><Rank /></el-icon>
-                    <span>角色管理</span>
-                </template>
-                </el-menu-item>
-            </router-link>
-
-            <router-link to="/sys/menu">
+            <router-link v-for="subMenu in menu.children" :to="subMenu.path" :index="subMenu.name" :key="subMenu.name">
                 <el-menu-item index="1-3">
                 <template #title>
-                    <el-icon><IconMenu /></el-icon>
-                    <span>菜单管理</span>
-                </template>
-                </el-menu-item>
-            </router-link>
-        </el-sub-menu>
-
-        <el-sub-menu index="2">
-            <template #title>
-                <el-icon><Tools /></el-icon>
-                <span>系统工具</span>
-            </template>
-
-            <router-link to="/dict">
-                <el-menu-item index="2-1">
-                <template #title>
-                    <el-icon><List /></el-icon>
-                    <span>数字字典</span>
+                    <component
+                    :is="subMenu.icon"
+                    style="width: 1.2em; height: 1.2em; margin-right: 8px;"
+                    >
+                    </component>
+                    <span>{{ subMenu.title }}</span>
                 </template>
                 </el-menu-item>
             </router-link>
@@ -69,15 +43,22 @@
   </template>
  
   <script setup>
- import {  
-    Operation, 
-    Tools, 
-    UserFilled, 
-    Rank, 
-    List, 
-    HomeFilled, 
-    Menu as IconMenu
-  } from '@element-plus/icons-vue'
+    import { ref, computed } from 'vue'
+    import axios from '@/plugins/axios.js'
+    import store from '@/store'
+
+    // let menuList = ref([])
+
+    // function getMenuList() {
+    //     menuList.value = store.state.menus.menuList
+    // }
+
+    // getMenuList()    
+
+    let menuList = computed(() => {
+        return store.state.menus.menuList
+    })
+
   </script>
  
  <style>

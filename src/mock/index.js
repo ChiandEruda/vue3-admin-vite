@@ -42,3 +42,52 @@ Mock.mock(RegExp('/sys/user'), 'get', () => {
 
 	return Result
 })
+
+Mock.mock(RegExp('/sys/menu/nav'), 'get', () => {
+	let nav = [
+        {
+            title: '系统管理',
+            name: 'SysManage',
+            icon: 'Operation',
+            path: '',
+            children: [
+                {
+                    title: '用户管理',
+                    name: 'SysUser',
+                    icon: 'User',
+                    component: 'sys/User',
+                    path: '/sys/user'
+                },
+                {
+                    title: '角色管理',
+                    name: 'SysRole',
+                    icon: 'Rank',
+					component: 'sys/Role',
+                    path: '/sys/role'
+                }
+            ]
+        },
+        {
+            title: '系统工具',
+            name: 'SysTools',
+            icon: 'Tools',
+            path: '',
+            children: [
+                {
+                    title: '数字字典',
+                    name: 'SysDict',
+                    icon: 'List',
+                    path: '/sys/dict'
+                }
+            ]
+        } 		
+	]
+	let permit = []
+
+	Result.data = {
+		nav,
+		permit
+	}
+
+	return Result
+})
