@@ -10,6 +10,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
+    redirect: '/index',
     component: HomeView,
     children: [
       {
@@ -90,13 +91,18 @@ router.beforeEach((to, from ,next) => {
       newRoutes.forEach(r => {
         router.addRoute(r)
       })
+
+      // console.log(router.getRoutes())
+      hasRoute = true
+      store.commit('setRoute', true)
+
+      next ({...to, replace: true})
     })    
 
-    hasRoute = true
-    store.commit('setRoute', true)
+  } else {
+    next()
   }
 
-  next()
 })
 
 let modules = import.meta.glob('../views/**/*.vue')
@@ -105,7 +111,11 @@ let menuToRoute = menu => {
 
   let route = {
     name: menu.name,
-    path: menu.path
+    path: menu.path,
+    meta: {
+      icon: menu.icon,
+      title: menu.title
+    }
   }
   
   route.component = modules[`../views/${menu.component}.vue`]

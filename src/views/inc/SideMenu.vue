@@ -3,11 +3,11 @@
     active-text-color="#ffd04b"
     background-color="#545c64"
     class="el-menu-vertical-demo"
-    default-active="0"
+    :default-active="activeName"
     text-color="#fff"
     >
         <router-link to="/index">
-            <el-menu-item index="0">
+            <el-menu-item index="Index" @click="addTab({title: '首页', name: 'Index'})">
             <template #title>
                 <el-icon><HomeFilled /></el-icon>
                 <span>首页</span>
@@ -26,8 +26,8 @@
                 <span>{{ menu.title }}</span>
             </template>
 
-            <router-link v-for="subMenu in menu.children" :to="subMenu.path" :index="subMenu.name" :key="subMenu.name">
-                <el-menu-item index="1-3">
+            <router-link v-for="subMenu in menu.children" :to="subMenu.path" :key="subMenu.name">
+                <el-menu-item :index="subMenu.name" @click="addTab(subMenu)">
                 <template #title>
                     <component
                     :is="subMenu.icon"
@@ -55,9 +55,13 @@
 
     // getMenuList()    
 
-    let menuList = computed(() => {
-        return store.state.menus.menuList
-    })
+    let menuList = computed(() => store.state.menus.menuList)
+
+    let activeName = computed(() => store.state.menus.editableTabsValue)
+
+    function addTab(menu) {
+        store.commit('addTab', menu)
+    }
 
   </script>
  
