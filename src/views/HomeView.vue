@@ -10,7 +10,7 @@
  
 			 <div class="header-avatar">
  
-				<el-avatar size="medium" :src="userInfo.avatar"></el-avatar>
+				<el-avatar :src="userInfo.avatar"></el-avatar>
  
 				<el-dropdown trigger="click">
 				   <span class="el-dropdown-link">
@@ -36,7 +36,9 @@
 		  </el-header>
 		  <el-main>
 			<Tabs />
-			<router-view></router-view>
+			<div style="margin: 0 15px;">
+				<router-view></router-view>
+			</div>
 		  </el-main>
 	   </el-container>
 	</el-container>
@@ -59,7 +61,6 @@
   function getUserInfo() {
 	axios.get('/sys/user').then(res => {
 		userInfo.value = res.data.data
-		console.log(res.data.data)
 	})
   }
 
@@ -101,7 +102,7 @@
 	
 	.el-main {
 	  color: #333;
-	  text-align: center;
+	  /* text-align: center; */
 	  padding: 0;
 	}
 
