@@ -68,9 +68,9 @@
         <el-form :model="editForm" :rules="rules" ref="ruleFormRef" label-width="100px">
             <el-form-item label="上级菜单" prop="parentId">
                 <el-select v-model="editForm.parentId" placeholder="请选择上级菜单">
-                    <template v-for="item in tableData">
+                    <template v-for="item in tableData" :key="item.id">
                         <el-option :label="item.name" :value="item.id"></el-option>
-                        <template v-for="child in item.children">
+                        <template v-for="child in item.children"  :key="child.id">
                             <el-option :label="child.name" :value="child.id">
                                 {{ "- " + child.name }}
                             </el-option>
