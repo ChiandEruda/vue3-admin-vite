@@ -18,7 +18,7 @@
                     confirm-button-text="确认"
                     cancel-button-text="取消"
                     title="确认要批量删除吗？"
-                    @comfirm=""
+                    @confirm="handleDelete(null)"
                 >
                     <template #reference>
                         <el-button type="danger" :disabled="delStatus">批量删除</el-button>
@@ -133,6 +133,7 @@
     let currentPage = ref(1)
     let total = ref(0)
     let dialogVisible = ref(false)
+    let multipleSelection = ref([])
     let rules = ref({
         name: [
             {required: true, message: '请输入角色名称', trigger: 'blur'}
@@ -163,14 +164,20 @@
 
     function handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
+        size.value = val
+        getRoleList()
     }
 
     function handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+        currentPage.value = val
+        getRoleList()
     }
 
-    function handleSelectionChange() {
-        
+    function handleSelectionChange(val) {
+        // console.log(val);
+        delStatus.value = val.length === 0 ? true : false
+        multipleSelection.value = val
     }
 
     function submitForm(form) {
@@ -213,15 +220,25 @@
     }
 
     function handleDelete(id) {
-        axios.post('/sys/role/delete/' + id).then(res => {
+        let ids = []
+
+        if(id) {
+            ids.push(id)
+        } else {
+            multipleSelection.value.forEach(row => {
+                ids.push(row.id)
+            })
+        }
+
+        console.log(ids)
+
+        axios.post('/sys/role/delete/', ids).then(res => {
             ElMessage.success("删除成功")
             getRoleList()
         }).catch(err => {
             ElMessage.error("删除失败")
         })
     }    
-
-
 
     getRoleList()
 </script>
