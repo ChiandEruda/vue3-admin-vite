@@ -52,7 +52,7 @@
 
             <el-table-column prop="action" label="操作">
                 <template #default="scope">
-                    <el-button link type="primary" @click="handleEdit(scope.row.id)">分配权限</el-button>
+                    <el-button link type="primary" @click="handlePerms(scope.row.id)">分配权限</el-button>
 
                     <el-divider direction="vertical"></el-divider>
 
@@ -114,6 +114,29 @@
                     <el-button @click="resetForm()">重置</el-button>
                 </el-form-item>
             </el-form>
+        </el-dialog>      
+
+        <el-dialog
+        v-model="permsDialogVisible"
+        title="分配权限"
+        width="600px"
+        :before-close="handlePermsClose"
+        >
+            <el-tree
+                :props="props"
+                :data="permsTreeData"
+                show-checkbox
+                node-key="id"
+                default-expand-all="true"
+                check-strictly="true"
+                ref="permsTreeRef"
+                @check-change="handleCheckChange"
+            />
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="permsDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="handlePermsSubmit">确 定</el-button>
+            </span>
         </el-dialog>        
     </div>
 </template>
@@ -128,12 +151,21 @@
     let roleForm = ref({})
     let roleFormRef = ref()
     let tableRef = ref()
+    let permsTreeRef = ref()
     let tableData = ref([])
     let size = ref(10)
     let currentPage = ref(1)
     let total = ref(0)
     let dialogVisible = ref(false)
+    let permsDialogVisible = ref(false)
+    let permsTreeData = ref([])
     let multipleSelection = ref([])
+    let count = ref(1)
+    let permsId = ref()
+    let props = ref({
+        label: 'name',
+        children: 'children',        
+    })
     let rules = ref({
         name: [
             {required: true, message: '请输入角色名称', trigger: 'blur'}
@@ -159,6 +191,12 @@
             size.value = res.data.data.size
             total.value = res.data.data.total
             currentPage.value = res.data.data.current
+        })
+    }
+
+    function getMenuList() {
+        axios.get('/sys/menu/list').then(res => {
+            permsTreeData.value = res.data.data
         })
     }
 
@@ -240,7 +278,34 @@
         })
     }    
 
+    function handlePerms(id){
+        permsDialogVisible.value = true
+
+        axios.get('/sys/role/info' + id).then(res => {
+            permsTreeRef.value.setCheckedKeys(res.data.data.menuIds)
+            permsId.value = res.data.data.id
+        })
+    }
+
+    function handleCheckChange(data, checked, indeterminate) {
+        console.log(data, checked, indeterminate)
+    }
+
+    function handlePermsClose(done){
+        done()
+    }
+
+    function handlePermsSubmit() {
+        let menuIds = permsTreeRef.value.getCheckedKeys()
+        console.log(permsId.value)
+        axios.post('/sys/role/perm/' + permsId.value, menuIds).then(res => {
+            ElMessage.success("提交成功")
+        })
+        permsDialogVisible.value = false
+    }
+
     getRoleList()
+    getMenuList()
 </script>
 
 <style scoped>
