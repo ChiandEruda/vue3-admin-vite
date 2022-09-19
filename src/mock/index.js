@@ -78,7 +78,7 @@ Mock.mock(RegExp('/sys/menu/nav'), 'get', () => {
             ]
         } 		
 	]
-	let permit = []
+	let permit = ['sys:user:list', "sys:user:save", "sys:user:delete"]
 
 	Result.data = {
 		nav,
